@@ -1,0 +1,141 @@
+{
+  "proyecto": {
+    "nombre": "Hito Visualizador para la Participación Ciudadana del Territorio",
+    "subtitulo": "Sistema de Auditoría Relacional para Programas de Ordenamiento Ecológico",
+    "municipio": "Los Cabos, Baja California Sur",
+    "version": "2025-07-13",
+    "consigna": "El POEL permite construir donde el agua ya no alcanza."
+  },
+  "uga": [
+    {
+      "id": "01",
+      "nombre": "Centro de Población SJdC-CSL",
+      "politica": "Aprovechamiento Sustentable",
+      "usos": "Todo (remite a PDU)",
+      "porcentaje": "Variable",
+      "riesgo_agua": "N/A",
+      "iph_nivel": "BAJO",
+      "iph_puntuacion": "2/10",
+      "coordenadas": [-109.7100, 23.0600],
+      "cita": "Los usos de suelo serán los que establezca el Plan Director de Desarrollo Urbano vigente.",
+      "explicacion": "Esta UGA es la ciudad. Aquí viven la mayoría de las personas. El POEL dice que el crecimiento debe ser ordenado, pero no lo decide él: lo decide el Plan de Desarrollo Urbano."
+    },
+    {
+      "id": "04",
+      "nombre": "El Saltito",
+      "politica": "Aprovechamiento Sustentable",
+      "usos": "Extracción, Inmobiliario",
+      "porcentaje": "10% INM / 35% EXT",
+      "riesgo_agua": "Alto (-0.20 Hm³/año)",
+      "iph_nivel": "EXTREMO",
+      "iph_puntuacion": "6/10",
+      "coordenadas": [-109.6800, 23.0800],
+      "cita": "El área total destinada a la extracción... se podrá establecer en el 35% de la superficie total del predio (EXT-2).",
+      "explicacion": "Esta UGA permite extraer materiales (arena, grava, piedra) en hasta el 35% de cada predio. Eso es más de un tercio. Además, hay déficit de agua en la zona."
+    },
+    {
+      "id": "12",
+      "nombre": "Cuenca Este San José",
+      "politica": "Restauración",
+      "usos": "Extracción, Inmobiliario",
+      "porcentaje": "10% INM / 35% EXT",
+      "riesgo_agua": "Alto (-0.93 Hm³/año)",
+      "iph_nivel": "EXTREMO",
+      "iph_puntuacion": "8/10",
+      "coordenadas": [-109.6500, 23.0800],
+      "cita": "El área total destinada a la extracción... se podrá establecer en el 35% de la superficie total del predio (EXT-2). Restauración permite extracción de materiales.",
+      "explicacion": "Esta UGA tiene la política de Restauración. Eso significa que debería recuperar lo que se ha dañado. Pero permite extraer materiales en el 35% del predio. Y está justo donde está el acuífero que abastece de agua a San José del Cabo."
+    },
+    {
+      "id": "14",
+      "nombre": "Cauces San José",
+      "politica": "Protección",
+      "usos": "Extracción, Agricultura",
+      "porcentaje": "No aplica",
+      "riesgo_agua": "Alto (-0.93 Hm³/año)",
+      "iph_nivel": "MEDIO-ALTO",
+      "iph_puntuacion": "3/10",
+      "coordenadas": [-109.7200, 23.1500],
+      "cita": "La extracción de materiales pétreos... deberá respetar una zona de amortiguamiento de 25 m (EXT-1).",
+      "explicacion": "Esta UGA tiene la política de Protección. Pero permite extraer materiales en los cauces. Solo pide que se respete una zona de 25 metros. Esa zona es pequeña. El río San José es parte de un Sitio Ramsar (humedal de importancia internacional)."
+    },
+    {
+      "id": "22",
+      "nombre": "Cuenca Este Santiago",
+      "politica": "Aprovechamiento Sustentable",
+      "usos": "Inmobiliario (10%)",
+      "porcentaje": "10% (INM-3)",
+      "riesgo_agua": "Medio (0.060 Hm³/año)",
+      "iph_nivel": "MEDIO-ALTO",
+      "iph_puntuacion": "3/10",
+      "coordenadas": [-109.8000, 23.2000],
+      "cita": "El porcentaje de aprovechamiento no podrá exceder del 10% del predio (INM-3).",
+      "explicacion": "Esta UGA permite construir en el 10% de cada predio. No permite extracción ni turismo convencional. Tiene disponibilidad de agua (aunque poca)."
+    },
+    {
+      "id": "24",
+      "nombre": "Cabo Norte La Ribera",
+      "politica": "Aprovechamiento Sustentable",
+      "usos": "Inmobiliario (20%), Turismo Convencional (75 cuartos)",
+      "porcentaje": "20% (INM-1), 75 cuartos (TC-50)",
+      "riesgo_agua": "Bajo (0.027 Hm³/año)",
+      "iph_nivel": "EXTREMO",
+      "iph_puntuacion": "7/10",
+      "coordenadas": [-109.8500, 23.3500],
+      "cita": "El porcentaje de aprovechamiento podrá ser de hasta el 20% (TC-1). Se permite hotel con capacidad máxima de 75 cuartos (TC-50).",
+      "explicacion": "Esta UGA permite construir hasta el 20% de cada predio y hoteles de hasta 75 cuartos. Es una zona costera, cerca del mar. El riesgo de inundación es alto (26.53%)."
+    },
+    {
+      "id": "27",
+      "nombre": "Punta Arenas",
+      "politica": "Protección",
+      "usos": "Inmobiliario (10%), Turismo Convencional (5 cuartos/ha)",
+      "porcentaje": "10% (INM-3), 5 cuartos/ha (TC-4)",
+      "riesgo_agua": "Alto (-0.083 Hm³/año)",
+      "iph_nivel": "EXTREMO",
+      "iph_puntuacion": "7/10",
+      "coordenadas": [-109.9000, 23.4000],
+      "cita": "Los proyectos de turismo convencional podrán establecer una densidad de 5 cuartos hoteleros por hectárea (TC-4).",
+      "explicacion": "Esta UGA tiene la política de Protección. Pero permite turismo convencional e inmobiliario. Es una zona donde anidan tortugas marinas. El riesgo de inundación es muy alto (30.62%)."
+    },
+    {
+      "id": "29",
+      "nombre": "Cabo del Este",
+      "politica": "Protección",
+      "usos": "Inmobiliario (10%), Turismo Convencional (5 cuartos/ha)",
+      "porcentaje": "10% (INM-3), 5 cuartos/ha (TC-4)",
+      "riesgo_agua": "Alto (-0.411 Hm³/año)",
+      "iph_nivel": "EXTREMO",
+      "iph_puntuacion": "7/10",
+      "coordenadas": [-109.9200, 23.4500],
+      "cita": "Se mantiene al menos el 90%... En el 10% se establecen actividades... turismo convencional.",
+      "explicacion": "Esta UGA tiene la política de Protección. Pero permite turismo convencional e inmobiliario en el 10% de cada predio. Tiene déficit de agua y es una zona de alto valor paisajístico."
+    },
+    {
+      "id": "31",
+      "nombre": "Sierra La Trinidad",
+      "politica": "Protección",
+      "usos": "Ganadería, Forestal, Turismo Alternativo",
+      "porcentaje": "No aplica",
+      "riesgo_agua": "Alto (-0.972 Hm³/año)",
+      "iph_nivel": "MEDIO-ALTO",
+      "iph_puntuacion": "4/10",
+      "coordenadas": [-110.0000, 23.5000],
+      "cita": "Solo permite GAN, FOR y TA. No hay usos intensivos.",
+      "explicacion": "Esta UGA solo permite ganadería, actividades forestales y turismo alternativo (ecoturismo). No permite inmobiliario ni turismo convencional. Es coherente con su política de Protección."
+    },
+    {
+      "id": "32",
+      "nombre": "Sierra La Trinidad Cuenca SJ",
+      "politica": "Preservación",
+      "usos": "Agricultura, Ganadería, Forestal",
+      "porcentaje": "No aplica",
+      "riesgo_agua": "Alto (-0.871 Hm³/año)",
+      "iph_nivel": "MEDIO-ALTO",
+      "iph_puntuacion": "4/10",
+      "coordenadas": [-110.0200, 23.5200],
+      "cita": "Solo permite AG, GAN y FOR. Sin usos intensivos.",
+      "explicacion": "Esta UGA solo permite agricultura, ganadería y actividades forestales. No permite inmobiliario ni turismo convencional. Está en una zona alta donde nace el agua que llega a San José del Cabo."
+    }
+  ]
+}

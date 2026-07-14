@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hito Visualizador · Participación Ciudadana del Territorio</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+    <style>
+        /* ===== RESET Y BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+            background: #f5f5f5;
+        }
+
+        /* ===== HEADER FIJO ===== */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            padding: 16px 24px 12px 24px;
+            border-bottom: 3px solid #cc0000;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .header h1 span {
+            color: #cc0000;
+        }
+
+        .header .subtitulo {
+            font-size: 13px;
+            font-weight: 400;
+            color: #666;
+            letter-spacing: 0.3px;
+            margin-top: 4px;
+            border-top: 1px solid #eee;
+            padding-top: 6px;
+        }
+        .header .subtitulo strong {
+            color: #cc0000;
+            font-weight: 600;
+        }
+
+        /* ===== PANEL LATERAL ===== */
+        .panel {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            padding: 18px 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 240px;
+            max-height: 70vh;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .panel::-webkit-scrollbar {
+            width: 3px;
+        }
+        .panel::-webkit-scrollbar-thumb {
+            background: #cc0000;
+            border-radius: 4px;
+        }
+
+        .panel h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .panel .leyenda-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 12px;
+            color: #333;
+        }
+        .panel .leyenda-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 10px;
+            flex-shrink: 0;
+            border: 1px solid #ddd;
+        }
+        .leyenda-color.rojo {
+            background: #cc0000;
+        }
+        .leyenda-color.gris {
+            background: #999;
+        }
+        .leyenda-color.negro {
+            background: #1a1a1a;
+        }
+
+        .panel .cita {
+            background: #f9f9f9;
+            border-left: 3px solid #cc0000;
+            padding: 8px 12px;
+            margin: 12px 0 6px 0;
+            font-size: 11px;
+            color: #555;
+            line-height: 1.5;
+        }
+        .panel .cita strong {
+            color: #cc0000;
+        }
+
+        .panel .nota {
+            font-size: 10px;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            margin-top: 10px;
+        }
+
+        /* ===== LEYENDA INFERIOR ===== */
+        .footer-leyenda {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(4px);
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            font-size: 11px;
+            color: #444;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+        .footer-leyenda .fila {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+        }
+        .footer-leyenda .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            flex-shrink: 0;
+            border: 1px solid #ddd;
+        }
+        .dot.rojo {
+            background: #cc0000;
+        }
+        .dot.gris {
+            background: #999;
+        }
+        .dot.negro {
+            background: #1a1a1a;
+        }
+
+        .footer-credito {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            font-size: 10px;
+            color: #aaa;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        /* ===== POPUPS ===== */
+        .custom-popup .leaflet-popup-content-wrapper {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+            color: #1a1a1a;
+        }
+        .custom-popup .leaflet-popup-tip {
+            background: #ffffff;
+        }
+        .custom-popup .leaflet-popup-content {
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 320px;
+            padding: 4px 0;
+        }
+
+        .popup-titulo {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+        .popup-titulo .uga-num {
+            color: #cc0000;
+        }
+
+        .popup-label {
+            color: #888;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-top: 4px;
+        }
+        .popup-valor {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .popup-cita {
+            background: #f9f9f9;
+            border-left: 3px solid #cc0000;
+            padding: 6px 10px;
+            margin: 6px 0;
+            font-size: 11px;
+            color: #555;
+            font-style: italic;
+        }
+        .popup-cita strong {
+            color: #cc0000;
+            font-style: normal;
+        }
+
+        .popup-iph {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .popup-iph.extremo {
+            background: #cc0000;
+            color: #fff;
+        }
+        .popup-iph.alto {
+            background: #e67e22;
+            color: #fff;
+        }
+        .popup-iph.medio {
+            background: #999;
+            color: #fff;
+        }
+        .popup-iph.bajo {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 14px 8px 14px;
+            }
+            .header h1 {
+                font-size: 15px;
+            }
+            .header .subtitulo {
+                font-size: 10px;
+            }
+
+            .panel {
+                top: 80px;
+                right: 10px;
+                max-width: 170px;
+                padding: 12px 14px;
+                font-size: 10px;
+                max-height: 50vh;
+            }
+            .panel h2 {
+                font-size: 11px;
+            }
+            .panel .leyenda-item {
+                font-size: 10px;
+            }
+            .panel .cita {
+                font-size: 9px;
+                padding: 4px 8px;
+            }
+
+            .footer-leyenda {
+                bottom: 10px;
+                left: 10px;
+                padding: 6px 10px;
+                font-size: 9px;
+                max-width: 150px;
+            }
+            .footer-credito {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <h1>HITO VISUALIZADOR PARA LA <span>PARTICIPACIÓN CIUDADANA</span> DEL TERRITORIO</h1>
+        <div class="subtitulo">Sistema de Auditoría Relacional para Programas de Ordenamiento Ecológico · <strong>Los Cabos</strong></div>
+    </div>
+
+    <!-- ===== PANEL LATERAL ===== -->
+    <div class="panel">
+        <h2>CLAVES DE LECTURA</h2>
+
+        <div class="leyenda-item">
+            <span class="leyenda-color rojo"></span> Presión <strong style="color:#cc0000;">EXTREMA</strong>
+        </div>
+        <div class="leyenda-item">
+            <span class="leyenda-color gris"></span> Presión <strong style="color:#666;">MEDIA-ALTA</strong>
+        </div>
+        <div class="leyenda-item">
+            <span class="leyenda-color negro"></span> Presión <strong style="color:#1a1a1a;">BAJA</strong>
+        </div>
+
+        <div class="cita">
+            <strong>💧 Indicador de Presión Hídrica (IPH)</strong><br />
+            Mide la presión sobre el agua en cada UGA, combinando:
+            déficit hídrico, usos del suelo, riesgo de inundación y porcentaje de aprovechamiento.
+        </div>
+
+        <div class="cita" style="border-left-color:#1a1a1a; background:#f5f5f5;">
+            <strong>📌 Consigna</strong><br />
+            <em>"El POEL permite construir donde el agua ya no alcanza."</em>
+        </div>
+
+        <div class="nota">Haz clic en cada punto para ver la ficha de auditoría</div>
+    </div>
+
+    <!-- ===== LEYENDA INFERIOR ===== -->
+    <div class="footer-leyenda">
+        <div class="fila"><span class="dot rojo"></span> IPH Extremo — Déficit + usos intensivos</div>
+        <div class="fila"><span class="dot gris"></span> IPH Medio-Alto — Déficit sin usos intensivos</div>
+        <div class="fila"><span class="dot negro"></span> IPH Bajo — Sin presión significativa</div>
+    </div>
+
+    <div class="footer-credito">Nodo de Observación Biocultural · Los Cabos</div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ============================================================
+        // MAPA BASE — ESTILO MINIMALISTA
+        // ============================================================
+        var map = L.map('map', {
+            zoomControl: false,
+            scrollWheelZoom: true
+        }).setView([23.15, -109.80], 9);
+
+        // Mapa con relieve (Stamen Terrain) - sin líneas de horizonte
+L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    maxZoom: 18
+}).addTo(map);
+
+        // Controles
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        L.control.scale({ position: 'bottomright', metric: true, imperial: false }).addTo(map);
+
+        // ============================================================
+        // DATOS COMPLETOS (10 UGA PRIORITARIAS CON IPH)
+        // ============================================================
+        var ugaData = [{
+            uga: "01",
+            nombre: "Centro de Población SJdC-CSL",
+            politica: "Aprovechamiento Sustentable",
+            usos: "Todo (remite a PDU)",
+            porcentaje: "Variable",
+            riesgo_agua: "N/A",
+            iph: "BAJO",
+            iph_puntuacion: "2/10",
+            color: "#1a1a1a",
+            coords: [-109.7100, 23.0600],
+            cita: "Los usos de suelo serán los que establezca el Plan Director de Desarrollo Urbano vigente.",
+            explicacion: "Esta UGA es la ciudad. Aquí viven la mayoría de las personas. El POEL dice que el crecimiento debe ser ordenado, pero no lo decide él: lo decide el Plan de Desarrollo Urbano."
+        }, {
+            uga: "04",
+            nombre: "El Saltito",
+            politica: "Aprovechamiento Sustentable",
+            usos: "Extracción, Inmobiliario",
+            porcentaje: "10% INM / 35% EXT",
+            riesgo_agua: "Alto (-0.20 Hm³/año)",
+            iph: "EXTREMO",
+            iph_puntuacion: "6/10",
+            color: "#cc0000",
+            coords: [-109.6800, 23.0800],
+            cita: "El área total destinada a la extracción... se podrá establecer en el 35% de la superficie total del predio (EXT-2).",
+            explicacion: "Esta UGA permite extraer materiales (arena, grava, piedra) en hasta el 35% de cada predio. Eso es más de un tercio. Además, hay déficit de agua en la zona."
+        }, {
+            uga: "12",
+            nombre: "Cuenca Este San José",
+            politica: "Restauración",
+            usos: "Extracción, Inmobiliario",
+            porcentaje: "10% INM / 35% EXT",
+            riesgo_agua: "Alto (-0.93 Hm³/año)",
+            iph: "EXTREMO",
+            iph_puntuacion: "8/10",
+            color: "#cc0000",
+            coords: [-109.6500, 23.0800],
+            cita: "El área total destinada a la extracción... se podrá establecer en el 35% de la superficie total del predio (EXT-2). Restauración permite extracción de materiales.",
+            explicacion: "Esta UGA tiene la política de Restauración. Eso significa que debería recuperar lo que se ha dañado. Pero permite extraer materiales en el 35% del predio. Y está justo donde está el acuífero que abastece de agua a San José del Cabo."
+        }, {
+            uga: "14",
+            nombre: "Cauces San José",
+            politica: "Protección",
+            usos: "Extracción, Agricultura",
+            porcentaje: "No aplica",
+            riesgo_agua: "Alto (-0.93 Hm³/año)",
+            iph: "MEDIO-ALTO",
+            iph_puntuacion: "3/10",
+            color: "#999",
+            coords: [-109.7200, 23.1500],
+            cita: "La extracción de materiales pétreos... deberá respetar una zona de amortiguamiento de 25 m (EXT-1).",
+            explicacion: "Esta UGA tiene la política de Protección. Pero permite extraer materiales en los cauces. Solo pide que se respete una zona de 25 metros. Esa zona es pequeña. El río San José es parte de un Sitio Ramsar (humedal de importancia internacional)."
+        }, {
+            uga: "22",
+            nombre: "Cuenca Este Santiago",
+            politica: "Aprovechamiento Sustentable",
+            usos: "Inmobiliario (10%)",
+            porcentaje: "10% (INM-3)",
+            riesgo_agua: "Medio (0.060 Hm³/año)",
+            iph: "MEDIO-ALTO",
+            iph_puntuacion: "3/10",
+            color: "#999",
+            coords: [-109.8000, 23.2000],
+            cita: "El porcentaje de aprovechamiento no podrá exceder del 10% del predio (INM-3).",
+            explicacion: "Esta UGA permite construir en el 10% de cada predio. No permite extracción ni turismo convencional. Tiene disponibilidad de agua (aunque poca)."
+        }, {
+            uga: "24",
+            nombre: "Cabo Norte La Ribera",
+            politica: "Aprovechamiento Sustentable",
+            usos: "Inmobiliario (20%), Turismo Convencional (75 cuartos)",
+            porcentaje: "20% (INM-1), 75 cuartos (TC-50)",
+            riesgo_agua: "Bajo (0.027 Hm³/año)",
+            iph: "EXTREMO",
+            iph_puntuacion: "7/10",
+            color: "#cc0000",
+            coords: [-109.8500, 23.3500],
+            cita: "El porcentaje de aprovechamiento podrá ser de hasta el 20% (TC-1). Se permite hotel con capacidad máxima de 75 cuartos (TC-50).",
+            explicacion: "Esta UGA permite construir hasta el 20% de cada predio y hoteles de hasta 75 cuartos. Es una zona costera, cerca del mar. El riesgo de inundación es alto (26.53%)."
+        }, {
+            uga: "27",
+            nombre: "Punta Arenas",
+            politica: "Protección",
+            usos: "Inmobiliario (10%), Turismo Convencional (5 cuartos/ha)",
+            porcentaje: "10% (INM-3), 5 cuartos/ha (TC-4)",
+            riesgo_agua: "Alto (-0.083 Hm³/año)",
+            iph: "EXTREMO",
+            iph_puntuacion: "7/10",
+            color: "#cc0000",
+            coords: [-109.9000, 23.4000],
+            cita: "Los proyectos de turismo convencional podrán establecer una densidad de 5 cuartos hoteleros por hectárea (TC-4).",
+            explicacion: "Esta UGA tiene la política de Protección. Pero permite turismo convencional e inmobiliario. Es una zona donde anidan tortugas marinas. El riesgo de inundación es muy alto (30.62%)."
+        }, {
+            uga: "29",
+            nombre: "Cabo del Este",
+            politica: "Protección",
+            usos: "Inmobiliario (10%), Turismo Convencional (5 cuartos/ha)",
+            porcentaje: "10% (INM-3), 5 cuartos/ha (TC-4)",
+            riesgo_agua: "Alto (-0.411 Hm³/año)",
+            iph: "EXTREMO",
+            iph_puntuacion: "7/10",
+            color: "#cc0000",
+            coords: [-109.9200, 23.4500],
+            cita: "Se mantiene al menos el 90%... En el 10% se establecen actividades... turismo convencional.",
+            explicacion: "Esta UGA tiene la política de Protección. Pero permite turismo convencional e inmobiliario en el 10% de cada predio. Tiene déficit de agua y es una zona de alto valor paisajístico."
+        }, {
+            uga: "31",
+            nombre: "Sierra La Trinidad",
+            politica: "Protección",
+            usos: "Ganadería, Forestal, Turismo Alternativo",
+            porcentaje: "No aplica",
+            riesgo_agua: "Alto (-0.972 Hm³/año)",
+            iph: "MEDIO-ALTO",
+            iph_puntuacion: "4/10",
+            color: "#999",
+            coords: [-110.0000, 23.5000],
+            cita: "Solo permite GAN, FOR y TA. No hay usos intensivos.",
+            explicacion: "Esta UGA solo permite ganadería, actividades forestales y turismo alternativo (ecoturismo). No permite inmobiliario ni turismo convencional. Es coherente con su política de Protección."
+        }, {
+            uga: "32",
+            nombre: "Sierra La Trinidad Cuenca SJ",
+            politica: "Preservación",
+            usos: "Agricultura, Ganadería, Forestal",
+            porcentaje: "No aplica",
+            riesgo_agua: "Alto (-0.871 Hm³/año)",
+            iph: "MEDIO-ALTO",
+            iph_puntuacion: "4/10",
+            color: "#999",
+            coords: [-110.0200, 23.5200],
+            cita: "Solo permite AG, GAN y FOR. Sin usos intensivos.",
+            explicacion: "Esta UGA solo permite agricultura, ganadería y actividades forestales. No permite inmobiliario ni turismo convencional. Está en una zona alta donde nace el agua que llega a San José del Cabo."
+        }];
+
+        // ============================================================
+        // CREAR MARCADORES
+        // ============================================================
+        ugaData.forEach(function(item) {
+
+            // Clase CSS para el IPH
+            var iphClass = '';
+            if (item.iph === 'EXTREMO') iphClass = 'extremo';
+            else if (item.iph === 'MEDIO-ALTO') iphClass = 'alto';
+            else iphClass = 'bajo';
+
+            // Construir contenido del popup
+            var popupContent = `
+                    <div class="popup-titulo">UGA <span class="uga-num">${item.uga}</span> — ${item.nombre}</div>
+
+                    <p><span class="popup-label">📋 Política ecológica</span><br><span class="popup-valor">${item.politica}</span></p>
+                    <p><span class="popup-label">⚙️ Usos de suelo compatibles</span><br><span class="popup-valor">${item.usos}</span></p>
+                    <p><span class="popup-label">📐 % de aprovechamiento</span><br><span class="popup-valor">${item.porcentaje}</span></p>
+                    <p><span class="popup-label">💧 Riesgo hídrico</span><br><span class="popup-valor">${item.riesgo_agua}</span></p>
+
+                    <p><span class="popup-label">📊 Indicador de Presión Hídrica (IPH)</span><br>
+                    <span class="popup-iph ${iphClass}">${item.iph} — ${item.iph_puntuacion}</span></p>
+
+                    <div class="popup-cita"><strong>📄 Cita textual del POEL</strong><br>"${item.cita}"</div>
+
+                    <p style="font-size:11px; color:#555; background:#f9f9f9; padding:6px 10px; border-radius:4px; margin:6px 0;">
+                        <strong>🔍 Explicación:</strong> ${item.explicacion}
+                    </p>
+
+                    <p style="font-size:10px; color:#aaa; margin-top:6px; border-top:1px solid #eee; padding-top:4px;">
+                        Haz clic fuera para cerrar
+                    </p>
+                `;
+
+            // Tamaño del marcador según IPH
+            var radius = 10;
+            if (item.iph === 'EXTREMO') radius = 16;
+            else if (item.iph === 'MEDIO-ALTO') radius = 12;
+            else radius = 8;
+
+            // Crear círculo
+            var marker = L.circleMarker(item.coords, {
+                radius: radius,
+                fillColor: item.color,
+                color: '#ffffff',
+                weight: 1.5,
+                opacity: 0.8,
+                fillOpacity: 0.85
+            }).addTo(map);
+
+            marker.bindPopup(popupContent, {
+                maxWidth: 340,
+                className: 'custom-popup'
+            });
+
+            // Etiqueta con el número de UGA
+            var label = L.marker(item.coords, {
+                icon: L.divIcon({
+                    className: 'uga-label',
+                    html: `<div style="background:rgba(255,255,255,0.92); color:#1a1a1a; border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; border:2px solid ${item.color}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">${item.uga}</div>`,
+                    iconSize: [26, 26],
+                    iconAnchor: [13, 13]
+                })
+            }).addTo(map);
+
+            // Abrir popup al hacer clic en la etiqueta
+            label.on('click', function() {
+                marker.openPopup();
+            });
+        });
+
+        // ============================================================
+        // MARCADOR ESPECIAL PARA EL ACUÍFERO (UGA 12)
+        // ============================================================
+        var acuiferoIcon = L.divIcon({
+            className: 'acuifero-icon',
+            html: `<div style="background:#cc0000; color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-size:9px; border:2px solid #fff; box-shadow: 0 0 20px rgba(204,0,0,0.5);">💧</div>`,
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
+        });
+
+        var acuiferoMarker = L.marker([23.0800, -109.6500], {
+            icon: acuiferoIcon
+        }).addTo(map);
+
+        acuiferoMarker.bindPopup(`
+                <div style="text-align:center; padding:4px 0; font-size:13px;">
+                    <strong style="color:#cc0000;">💧 ACUÍFERO SAN JOSÉ DEL CABO</strong><br>
+                    Clave: <strong>0319</strong><br>
+                    Déficit: <span style="color:#cc0000; font-weight:bold;">-5.25 Hm³/año</span><br>
+                    <span style="font-size:11px; color:#888;">Ubicado dentro de la UGA 12</span>
+                </div>
+            `);
+
+        // ============================================================
+        // AJUSTAR VISTA PARA MOSTRAR TODOS LOS PUNTOS
+        // ============================================================
+        var allCoords = ugaData.map(function(item) {
+            return item.coords;
+        });
+        map.fitBounds(L.latLngBounds(allCoords).pad(0.12));
+
+        // ============================================================
+        // MENSAJE EN CONSOLA
+        // ============================================================
+        console.log('✅ Hito Visualizador para la Participación Ciudadana del Territorio cargado.');
+        console.log('📌 10 UGA prioritarias · IPH integrado.');
+        console.log('📄 Cada popup incluye cita textual y explicación en lenguaje accesible.');
+        console.log('💧 Acuífero 0319 marcado en UGA 12.');
+        console.log('📢 Consigna: "El POEL permite construir donde el agua ya no alcanza."');
+    </script>
+
+</body>
+</html>
